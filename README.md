@@ -117,6 +117,7 @@ Example Response
         <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
         <button id="submit">Submit</button>
         <div id="result"></div>
+        <img id="image" src="" alt="Generated Image" style="display:none;">
     </div>
     <script src="script.js"></script>
 </body>
@@ -175,6 +176,10 @@ button:hover {
 #result {
     margin-top: 20px;
 }
+#image {
+    max-width: 100%;
+    margin-top: 10px;
+}
 ```
 
 ## JavaScript (script.js)
@@ -183,9 +188,9 @@ button:hover {
 document.getElementById('submit').addEventListener('click', async () => {
     const action = document.getElementById('action').value;
     const prompt = document.getElementById('prompt').value;
-    const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual API key
+    const apiKey = 'YOUR_API_KEY';
 
-    const response = await fetch('/path/to/your/api.php', {
+    const response = await fetch('path/to/api', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -196,6 +201,20 @@ document.getElementById('submit').addEventListener('click', async () => {
 
     const result = await response.json();
     document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    
+    // Clear previous image
+    const imgElement = document.getElementById('image');
+    imgElement.style.display = 'none'; // Hide the image by default
+
+    if (result.status === 'success') {
+        if (result.image) {
+            imgElement.src = 'data:image/png;base64,' + result.image; // Set the image source
+            imgElement.style.display = 'block'; // Show the image
+        }
+        if (result.text) {
+            document.getElementById('result').innerText = result.text; // Display the text
+        }
+    }
 });
 ```
 
